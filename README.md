@@ -4,6 +4,29 @@
 
 This project investigates genetic variation in the **mutL DNA mismatch repair gene** from sequencing datasets derived from the Long-Term Evolution Experiment (LTEE) with *Escherichia coli*. The analysis pipeline was implemented in a Linux (WSL) environment and includes quality control, read preprocessing, genome alignment, variant calling, and targeted mutation analysis.
 
+## Prerequisites & Installation
+
+### System Requirements
+- Linux (WSL or Ubuntu recommended)
+- 8 GB RAM minimum
+- 10–15 GB storage
+
+### Tools Used
+| Tool        | Purpose                                   |
+| ----------- | ----------------------------------------- |
+| FastQC      | Quality assessment of raw reads           |
+| Trimmomatic | Read trimming and filtering               |
+| BWA         | Reference genome alignment                |
+| SAMtools    | Alignment processing and BAM manipulation |
+| BCFtools    | Variant calling and filtering             |
+
+### Installation (Ubuntu/WSL)
+
+```bash
+sudo apt update
+sudo apt install fastqc bwa samtools bcftools trimmomatic
+```
+
 ## Background
 
 The Long-Term Evolution Experiment (LTEE), initiated by Richard Lenski in 1988, tracks evolutionary changes in *E. coli* populations over tens of thousands of generations. Mutations in DNA repair genes such as **mutL** can influence mutation rates and contribute to adaptive evolution.
@@ -29,17 +52,10 @@ The following sequencing runs were analyzed:
 | SRR2584863    |
 | SRR2584866    |
 | SRR2589044    |
+Data was obtained from NCBI SRA (LTEE project)
 
-## Software and Tools
-
-| Tool        | Purpose                                   |
-| ----------- | ----------------------------------------- |
-| FastQC      | Quality assessment of raw reads           |
-| Trimmomatic | Read trimming and filtering               |
-| BWA         | Reference genome alignment                |
-| SAMtools    | Alignment processing and BAM manipulation |
-| BCFtools    | Variant calling and filtering             |
-| Linux (WSL) | Analysis environment                      |
+### Reference Genome
+- Escherichia coli K-12 MG1655 (NCBI RefSeq)
 
 ## Analysis Workflow
 
@@ -77,27 +93,70 @@ The following sequencing runs were analyzed:
    * Extract variants overlapping the mutL genomic region.
    * Examine candidate mutations for further interpretation.
 
+Variant counts were obtained using bcftools after removing header lines and filtering for high-quality calls.
+
 ## Repository Structure
 
 ```text
 LTEE_project/
 ├── data/                # Raw sequencing data (excluded from GitHub)
-├── docs/                # Documentation
 ├── scripts/             # Analysis scripts
 ├── results/
 │   ├── mutLvar/         # mutL-specific variant results
 │   └── vcf/             # Filtered variant call files
 ├── README.md
-├── .gitignore
-└── ltee.txt
 ```
+## Key Results
+
+Variant calling was performed on three LTEE *E. coli* datasets:
+
+* SRR2584863
+* SRR2584866
+* SRR2589044
+
+### Summary of Variants Detected
+
+| Sample     | Total Variants Identified    |
+| ---------- | ---------------------------- |
+| SRR2584863 | 32                           |
+| SRR2584866 | 833                          |
+| SRR2589044 | 29                           |
+These counts represent raw variant calls after alignment and initial filtering.
+
+### mutL Gene Findings
+
+* A total of **1 high-confidence variant** was identified within the **mutL gene region (or its flanking region)**.
+* These variants were extracted and filtered for high-confidence calls.
+* The final annotated mutation set is stored in:
+
+```
+results/mutLvar/SRR2584866_mutL.vcf
+```
+| Chromosome  | Position | Reference | Alternate | QUAL   | Type |
+|-------------|----------|-----------|-----------|--------|------|
+| NC_012967.1 | 4377265  | A         | G         | 225.417| SNP  |
+
+### Interpretation
+
+A single nucleotide polymorphism (SNP) was identified in the mutL gene region at position 4377265, involving an A → G substitution.
+
+This mutation shows:
+- High confidence (QUAL = 225.417)
+- Strong read support (DP4 = 0,0,30,24)
+- No filter failure (PASS)
+
+If located within the coding region, this SNP may:
+- Be synonymous (no amino acid change), or  
+- Be nonsynonymous (amino acid substitution affecting protein function)
+
+Since mutL is a DNA mismatch repair gene, such mutations may contribute to a **mutator phenotype**, increasing genome-wide mutation rates in LTEE populations and accelerating evolutionary adaptation.
 
 ## Key Outputs
 
-* Quality control reports
-* Filtered VCF files
-* mutL-specific variant dataset
-* Reproducible analysis workflow
+- Quality control reports (FastQC)
+- BAM/SAM processed alignments
+- Filtered VCF files
+- mutL-specific variant extraction
 
 ## Reproducibility
 
@@ -113,5 +172,9 @@ The analysis was performed in a Linux (WSL) environment using open-source bioinf
 ## Author
 
 **Riya**
+
+## Citation
+
+Dataset sourced from the NCBI Sequence Read Archive (SRA) as part of the LTEE project.
 
 Bioinformatics Project – LTEE Variant Analysis
